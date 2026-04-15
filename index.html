@@ -660,12 +660,12 @@ async function predictStep(){
     }
     const best=preds.reduce((a,b)=>a.probability>b.probability?a:b);
     document.getElementById('confBar').style.width=(best.probability*100)+'%';
-    if(best.probability>0.78){
+    if(best.probability>0.72){
       const d=classToDir(best.className);
       if(d){setNextDir(d);setGestureUI(d);}
     }
   }catch(e){}
-  setTimeout(predictStep,100);
+  setTimeout(predictStep,1000);
 }
 
 function classToDir(n){
@@ -722,17 +722,9 @@ function tick(now){
 function stepSnake(){
   curDir=nextDir;
   const head=snake[0];
-  let nx=head.x+DIRS[curDir].dx,ny=head.y+DIRS[curDir].dy;
-  if(nx<0||nx>=COLS||ny<0||ny>=ROWS){
-    nextDir=OPP[curDir];curDir=nextDir;
-    nx=head.x+DIRS[curDir].dx;ny=head.y+DIRS[curDir].dy;
-    nx=Math.max(0,Math.min(COLS-1,nx));ny=Math.max(0,Math.min(ROWS-1,ny));
-  }
-  if(snake.some((s,i)=>i>0&&s.x===nx&&s.y===ny)){
-    nextDir=OPP[curDir];curDir=nextDir;
-    nx=head.x+DIRS[curDir].dx;ny=head.y+DIRS[curDir].dy;
-    nx=Math.max(0,Math.min(COLS-1,nx));ny=Math.max(0,Math.min(ROWS-1,ny));
-  }
+  // wrap-around: 벽에서 반대편으로 나오기 (nextDir 절대 건드리지 않음)
+  let nx=(head.x+DIRS[curDir].dx+COLS)%COLS;
+  let ny=(head.y+DIRS[curDir].dy+ROWS)%ROWS;
   snake.unshift({x:nx,y:ny});
   const fi=foods.findIndex(f=>f.x===nx&&f.y===ny);
   if(fi!==-1){score++;foods.splice(fi,1);spawnFood();updateHUD();}
