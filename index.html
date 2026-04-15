@@ -701,7 +701,7 @@ function spawnFood(){
 }
 
 function onSnake(x,y){return snake.some(s=>s.x===x&&s.y===y);}
-function setNextDir(d){if(OPP[d]!==curDir)nextDir=d;}
+function setNextDir(d){nextDir=d;}
 
 function runGameLoop(){
   if(rafId)cancelAnimationFrame(rafId);
