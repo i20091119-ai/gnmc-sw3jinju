@@ -596,24 +596,31 @@ async function startGame(mode){
 
   if(mode==='my'){
     const inputVal=document.getElementById('urlInput').value.trim();
-    if(!inputVal){
-      errEl.textContent='⚠️ URL을 입력해주세요!';
-      return;
-    }
-    if(!inputVal.includes('teachablemachine.withgoogle.com/models/')){
-      errEl.textContent='⚠️ 티처블머신 URL 형식이 아니에요';
-      return;
-    }
+    if(!inputVal){ errEl.textContent='⚠️ URL을 입력해주세요!'; return; }
+    if(!inputVal.includes('teachablemachine.withgoogle.com/models/'))
+      { errEl.textContent='⚠️ 티처블머신 URL 형식이 아니에요'; return; }
     TM_URL = inputVal.endsWith('/') ? inputVal : inputVal+'/';
   } else {
     TM_URL = DEFAULT_TM_URL;
   }
 
   btnMy.disabled=true; btnDef.disabled=true;
+
+  // ── 1단계: AI 모델 로드 ──
   try{
     txt.textContent='🤖 AI 모델 불러오는 중...';
     tmModel=await tmPose.load(TM_URL+'model.json',TM_URL+'metadata.json');
     modelReady=true;
+    txt.textContent='✅ AI 모델 준비 완료!';
+  }catch(e){
+    console.error('모델 로드 실패:', e);
+    txt.textContent='❌ 모델 로드 실패: URL을 다시 확인해주세요';
+    btnMy.disabled=false; btnDef.disabled=false;
+    return;
+  }
+
+  // ── 2단계: 카메라 연결 ──
+  try{
     txt.textContent='📷 카메라 연결 중...';
     webcamEl=document.getElementById('webcam');
     poseCanvasEl=document.getElementById('poseCanvas');
@@ -623,11 +630,13 @@ async function startGame(mode){
     txt.textContent='✅ 준비 완료!';
     startPredicting();
   }catch(e){
-    console.warn(e);
-    txt.textContent='⚠️ 카메라를 허용해주세요';
+    console.error('카메라 실패:', e);
+    txt.textContent='⚠️ 카메라 연결 실패 — 카메라 권한을 허용해주세요';
     btnMy.disabled=false; btnDef.disabled=false;
     return;
   }
+
+  // ── 3단계: 게임 시작 ──
   initGame(); showScreen('gameScreen'); runGameLoop();
 }
 
