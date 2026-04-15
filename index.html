@@ -410,6 +410,34 @@ body {
   text-align: center; min-height: 16px;
   font-family: 'Jua', sans-serif;
 }
+
+.url-guide {
+  width: 100%;
+  background: #fff8e1;
+  border: 1.5px solid #ffe082;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12px; color: #5d4037;
+  line-height: 1.9; font-weight: 700;
+  text-align: left;
+}
+.url-guide-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 13px; color: #e65100;
+  margin-bottom: 4px;
+}
+.url-guide-tags {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;
+}
+.tag {
+  background: white;
+  border: 1.5px solid #ffcc02;
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 12px; font-weight: 800;
+  color: #37474f;
+  font-family: 'Jua', sans-serif;
+}
 </style>
 </head>
 <body>
@@ -449,6 +477,16 @@ bubbles.forEach((b,i)=>{
       인공지능(머신러닝)을 활용하여 백혈구를 학습시키고,<br>
       카메라를 이용한 신체활동을 통해<br>
       바이러스를 직접 처치해 봅시다! 💪
+    </div>
+    <div class="url-guide">
+      <div class="url-guide-title">⚠️ 티처블머신 클래스 이름 규칙</div>
+      반드시 아래 단어가 <b>포함된</b> 이름으로 만들어야 해요!
+      <div class="url-guide-tags">
+        <span class="tag">⬆️ 위</span>
+        <span class="tag">⬇️ 아래</span>
+        <span class="tag">⬅️ 왼쪽</span>
+        <span class="tag">➡️ 오른쪽</span>
+      </div>
     </div>
     <div class="url-section">
       <div class="url-label">🔬 내가 학습시킨 티처블머신 URL 입력</div>
