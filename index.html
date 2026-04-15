@@ -641,6 +641,50 @@ async function startGame(mode){
 }
 
 
+function startPredicting(){
+  if(predicting)return;
+  predicting=true;
+  predictStep();
+}
+
+async function predictStep(){
+  if(!modelReady||!predicting)return;
+  try{
+    const{pose,posenetOutput}=await tmModel.estimatePose(webcamEl);
+    const preds=await tmModel.predict(posenetOutput);
+    if(poseCanvasEl&&pose){
+      const pc=poseCanvasEl.getContext('2d');
+      pc.clearRect(0,0,190,142);
+      tmPose.drawKeypoints(pose.keypoints,0.5,pc);
+      tmPose.drawSkeleton(pose.keypoints,0.5,pc);
+    }
+    const best=preds.reduce((a,b)=>a.probability>b.probability?a:b);
+    document.getElementById('confBar').style.width=(best.probability*100)+'%';
+    if(best.probability>0.78){
+      const d=classToDir(best.className);
+      if(d){setNextDir(d);setGestureUI(d);}
+    }
+  }catch(e){}
+  setTimeout(predictStep,100);
+}
+
+function classToDir(n){
+  n=n.toLowerCase();
+  if(n.includes('위')||n.includes('up'))return'UP';
+  if(n.includes('아래')||n.includes('down'))return'DOWN';
+  if(n.includes('왼')||n.includes('left'))return'LEFT';
+  if(n.includes('오른')||n.includes('right'))return'RIGHT';
+  return null;
+}
+
+function setGestureUI(d){
+  const icon=document.getElementById('gestureIcon');
+  icon.textContent=G_ICON[d]||'🤷';
+  icon.classList.remove('pop');void icon.offsetWidth;icon.classList.add('pop');
+  document.getElementById('gestureName').textContent=G_NAME[d]||'';
+}
+
+
 function initGame(){
   canvas=document.getElementById('gameCanvas');ctx=canvas.getContext('2d');
   const sx=Math.floor(COLS/2),sy=Math.floor(ROWS/2);
@@ -766,7 +810,7 @@ function endGame(){
 
 function restartGame(){
   initGame();showScreen('gameScreen');runGameLoop();
-  if(modelReady&&!predicting)startPredicting();
+  predicting=false; if(modelReady)startPredicting();
 }
 </script>
 </body>
